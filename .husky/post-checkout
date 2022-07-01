@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+if [ "$3" -eq 1 ]
+then
+    echo "You just checked out a new branch. Run ${RED}\$npm run prep${NC}."
+fi
