@@ -1,2 +1,7 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
+
+poetry run black .
+# poetry run flake8 .
+# poetry run mypy .
+# poetry run pytest --cov-report=html

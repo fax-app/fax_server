@@ -6,11 +6,6 @@
 		"prep": "./scripts/post-checkout.sh",
 		"commit": "commit"
 	},
-	"husky": {
-		"hooks": {
-			"pre-commit": "echo 'test'"
-		}
-	},
 	"devDependencies": {
 		"husky": "^8.0.0",
 		"prettier": "^2.7.0"
