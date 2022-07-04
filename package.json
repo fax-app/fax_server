@@ -3,11 +3,9 @@
 	"name": "fax_server",
 	"version": "0.0.0",
 	"scripts": {
-		"prep": "./scripts/post-checkout.sh",
-		"commit": "commit"
+		"prep": "./scripts/post-checkout.sh"
 	},
 	"devDependencies": {
-		"husky": "^8.0.0",
-		"prettier": "^2.7.0"
+		"husky": "^8.0.0"
 	}
 }
