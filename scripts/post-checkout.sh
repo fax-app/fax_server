@@ -2,4 +2,4 @@
 
 npm install
 husky install
-# poetry install
+poetry install
