@@ -3,7 +3,8 @@
 	"name": "fax_server",
 	"version": "0.0.0",
 	"scripts": {
-		"prep": "./scripts/post-checkout.sh"
+		"prep": "./scripts/post-checkout.sh",
+		"server": "./scripts/start_dev_server.sh"
 	},
 	"devDependencies": {
 		"husky": "^8.0.0"
