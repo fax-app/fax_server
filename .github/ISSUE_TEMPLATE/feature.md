@@ -2,7 +2,7 @@
 name: 🚀 Feature Request
 about: New feature or request 💡
 title: "[FEATURE]"
-labels: enhancement
+labels: feature
 ---
 
 **Context**
