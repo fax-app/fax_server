@@ -164,3 +164,4 @@ package-lock.json
 .mypy_cache
 .coverage
 htmlcov
+/.vscode
