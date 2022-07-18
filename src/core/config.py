@@ -8,15 +8,11 @@ class Settings(BaseSettings):
 
     ACCESS_TOKEN_EXPIRE_MINUTES: int
 
-    # postgres values
-    POSTGRES_SERVER: str
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
-    SQLALCHEMY_DATABASE_URI: str
+    # AWS values
+    AWS_ACCESS_KEY_ID: str
+    AWS_SECRET_ACCESS_KEY: str
+    AWS_REGION: str
 
-    FIRST_SUPERUSER: str
-    FIRST_SUPERUSER_PASSWORD: str
     USERS_OPEN_REGISTRATION: bool
 
     class Config:
