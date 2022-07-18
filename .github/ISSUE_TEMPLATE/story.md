@@ -2,7 +2,7 @@
 name: 📕 Story
 about: Story is a big feature ticket that contains multiple tasks.
 title: "[STORY]"
-labels: enhancement
+labels: story
 ---
 
 **User Story**

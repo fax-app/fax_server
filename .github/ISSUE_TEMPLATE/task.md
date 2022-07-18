@@ -2,7 +2,7 @@
 name: ✅ Task
 about: Single To-do
 title: "[TASK]"
-labels: enhancement
+labels: task
 ---
 
 **Description**
