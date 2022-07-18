@@ -3,11 +3,11 @@ from typing import Dict
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from app import crud
-from app.core.config import settings
-from app.models.user import User
-from app.schemas.user import UserCreate, UserUpdate
-from app.tests.utils.utils import random_email, random_lower_string
+from src import crud
+from src.core.config import settings
+from src.models.user import User
+from src.schemas.user import UserCreate, UserUpdate
+from src.tests.utils.utils import random_email, random_lower_string
 
 
 def user_authentication_headers(

@@ -8,6 +8,8 @@ from app.core.config import settings
 from emails.template import JinjaTemplate
 from jose import jwt
 
+from src.core.config import settings
+
 
 def send_email(
     email_to: str,
