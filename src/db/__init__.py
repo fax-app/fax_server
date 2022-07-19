@@ -1,1 +1,1 @@
-from .init_db import dynamo, table
+from .init_db import table

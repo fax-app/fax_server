@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -9,7 +9,7 @@ from src import crud, schemas
 from src.models import UserProfile
 from src.core import security
 from src.core.config import settings
-from src.db import dynamo, table
+from src.db import table
 import json
 
 reusable_oauth2 = OAuth2PasswordBearer(
@@ -17,12 +17,12 @@ reusable_oauth2 = OAuth2PasswordBearer(
 )
 
 
-def get_db() -> dynamo:
+def get_db() -> Any:
     return table
 
 
 def get_current_user(
-    db: dynamo = Depends(get_db), token: str = Depends(reusable_oauth2)
+    db: Any = Depends(get_db), token: str = Depends(reusable_oauth2)
 ) -> Optional[UserProfile]:
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[security.ALGORITHM])

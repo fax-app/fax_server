@@ -1,22 +1,21 @@
-from typing import Optional
+from typing import Optional, Any
 from datetime import datetime
 
 from src.core.security import get_password_hash, verify_password
 from src.crud.base import CRUDBase
 from src.schemas.user import UserCreate, UserUpdate
 from src.models import UserProfile
-from src.db import dynamo
 
 
 class CRUDUserProfile(CRUDBase[UserCreate, UserUpdate]):
-    def get_by_username(self, db: dynamo, *, username: str) -> Optional[UserProfile]:
+    def get_by_username(self, db: Any, *, username: str) -> Optional[UserProfile]:
         response = db.get_item(Key={"PK": f"USER#{username}", "SK": "PROFILE"})
         if "Item" not in response:
             return None
         else:
             return UserProfile(response["Item"])
 
-    def create(self, db: dynamo, *, obj_in: UserCreate) -> UserProfile:
+    def create(self, db: Any, *, obj_in: UserCreate) -> UserProfile:
         profile = UserProfile()
         profile.PK = f"USER#{obj_in.username}"
         profile.SK = "PROFILE"
@@ -30,7 +29,7 @@ class CRUDUserProfile(CRUDBase[UserCreate, UserUpdate]):
         return profile
 
     # def update(
-    #     self, db: dynamo, *, db_obj: User, obj_in: Union[UserUpdate, Dict[str, Any]]
+    #     self, db: Any, *, db_obj: User, obj_in: Union[UserUpdate, Dict[str, Any]]
     # ) -> User:
     #     if isinstance(obj_in, dict):
     #         update_data = obj_in
@@ -43,7 +42,7 @@ class CRUDUserProfile(CRUDBase[UserCreate, UserUpdate]):
     #     return super().update(db, db_obj=db_obj, obj_in=update_data)
 
     def authenticate(
-        self, db: dynamo, *, username: str, password: str
+        self, db: Any, *, username: str, password: str
     ) -> Optional[UserProfile]:
         user = self.get_by_username(db, username=username)
         if not user:

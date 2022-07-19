@@ -2,7 +2,6 @@ from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
 
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
-from src.db import dynamo
 
 
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -14,15 +13,15 @@ class CRUDBase(Generic[CreateSchemaType, UpdateSchemaType]):
     CRUD object with default methods to Create, Read, Update, Delete (CRUD).
     """
 
-    def get(self, db: dynamo, primaryKey: dict) -> Optional[dict]:
+    def get(self, db: Any, primaryKey: dict) -> Optional[dict]:
         response = db.get_item(Key={**primaryKey})
         item = response["Item"]
         return item
 
-    def get_multi(self, db: dynamo, *, skip: int = 0, limit: int = 100) -> List[dict]:
+    def get_multi(self, db: Any, *, skip: int = 0, limit: int = 100) -> List[dict]:
         return db.query(self.model).offset(skip).limit(limit).all()
 
-    def create(self, db: dynamo, *, obj_in: CreateSchemaType) -> Any:
+    def create(self, db: Any, *, obj_in: CreateSchemaType) -> Any:
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data)  # type: ignore
         db.add(db_obj)
@@ -32,7 +31,7 @@ class CRUDBase(Generic[CreateSchemaType, UpdateSchemaType]):
 
     def update(
         self,
-        db: dynamo,
+        db: Any,
         *,
         db_obj: Any,
         obj_in: Union[UpdateSchemaType, Dict[str, Any]],
@@ -50,7 +49,7 @@ class CRUDBase(Generic[CreateSchemaType, UpdateSchemaType]):
         db.refresh(db_obj)
         return db_obj
 
-    def remove(self, db: dynamo, *, id: int) -> Any:
+    def remove(self, db: Any, *, id: int) -> Any:
         obj = db.query(self.model).get(id)
         db.delete(obj)
         db.commit()
