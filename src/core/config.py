@@ -13,6 +13,16 @@ class Settings(BaseSettings):
     AWS_SECRET_ACCESS_KEY: str
     AWS_REGION: str
 
+    # email/smtp settings
+    EMAILS_ENABLED: bool
+    EMAIL_TEMPLATES_DIR: str
+    EMAILS_FROM_NAME: str
+    EMAILS_FROM_EMAIL: str
+    SMTP_HOST: str
+    SMTP_PORT: int
+    SMTP_USER: str
+    SMTP_PASSWORD: str
+
     USERS_OPEN_REGISTRATION: bool
 
     class Config:

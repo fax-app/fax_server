@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# git stash --keep-index -u -m commit
+
 poetry run black .
 # poetry run flake8 .
 # poetry run mypy .

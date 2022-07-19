@@ -11,9 +11,7 @@ def main():
 
     credentials_file: file = open(f"{aws_folder}/credentials", "w")
     secret_key_id: str = f"aws_access_key_id = {settings.AWS_ACCESS_KEY_ID}\n"
-    secret_access_key: str = (
-        f"aws_secret_access_key = {settings.AWS_SECRET_ACCESS_KEY}\n"
-    )
+    secret_access_key: str = f"aws_secret_access_key = {settings.AWS_SECRET_ACCESS_KEY}\n"
     credentials_file.write(f"[default]\n{secret_key_id}{secret_access_key}")
     credentials_file.close()
 

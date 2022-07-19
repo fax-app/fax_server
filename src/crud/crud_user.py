@@ -1,55 +1,59 @@
-from typing import Any, Dict, Optional, Union
-
-from sqlalchemy.orm import Session
+from typing import Optional
+from datetime import datetime
 
 from src.core.security import get_password_hash, verify_password
 from src.crud.base import CRUDBase
-from src.models.user import User
 from src.schemas.user import UserCreate, UserUpdate
+from src.models import UserProfile
+from src.db import dynamo
 
 
-class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
-    def get_by_email(self, db: Session, *, email: str) -> Optional[User]:
-        return db.query(User).filter(User.email == email).first()
-
-    def create(self, db: Session, *, obj_in: UserCreate) -> User:
-        db_obj = User(
-            email=obj_in.email,
-            hashed_password=get_password_hash(obj_in.password),
-            full_name=obj_in.full_name,
-            is_superuser=obj_in.is_superuser,
-        )
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
-        return db_obj
-
-    def update(
-        self, db: Session, *, db_obj: User, obj_in: Union[UserUpdate, Dict[str, Any]]
-    ) -> User:
-        if isinstance(obj_in, dict):
-            update_data = obj_in
+class CRUDUserProfile(CRUDBase[UserCreate, UserUpdate]):
+    def get_by_username(self, db: dynamo, *, username: str) -> Optional[UserProfile]:
+        response = db.get_item(Key={"PK": f"USER#{username}", "SK": "PROFILE"})
+        if "Item" not in response:
+            return None
         else:
-            update_data = obj_in.dict(exclude_unset=True)
-        if update_data["password"]:
-            hashed_password = get_password_hash(update_data["password"])
-            del update_data["password"]
-            update_data["hashed_password"] = hashed_password
-        return super().update(db, db_obj=db_obj, obj_in=update_data)
+            return UserProfile(response["Item"])
 
-    def authenticate(self, db: Session, *, email: str, password: str) -> Optional[User]:
-        user = self.get_by_email(db, email=email)
+    def create(self, db: dynamo, *, obj_in: UserCreate) -> UserProfile:
+        profile = UserProfile()
+        profile.PK = f"USER#{obj_in.username}"
+        profile.SK = "PROFILE"
+        profile.full_name = f"{obj_in.full_name}"
+        profile.hashed_password = f"{get_password_hash(obj_in.password)}"
+        profile.email = f"{obj_in.email}"
+        profile.created_at = datetime.now().isoformat()
+        profile.is_active = True
+
+        db.put_item(Item=profile.to_dict())
+        return profile
+
+    # def update(
+    #     self, db: dynamo, *, db_obj: User, obj_in: Union[UserUpdate, Dict[str, Any]]
+    # ) -> User:
+    #     if isinstance(obj_in, dict):
+    #         update_data = obj_in
+    #     else:
+    #         update_data = obj_in.dict(exclude_unset=True)
+    #     if update_data["password"]:
+    #         hashed_password = get_password_hash(update_data["password"])
+    #         del update_data["password"]
+    #         update_data["hashed_password"] = hashed_password
+    #     return super().update(db, db_obj=db_obj, obj_in=update_data)
+
+    def authenticate(
+        self, db: dynamo, *, username: str, password: str
+    ) -> Optional[UserProfile]:
+        user = self.get_by_username(db, username=username)
         if not user:
             return None
-        if not verify_password(password, user.hashed_password):
+        if not verify_password(password, user["hashed_password"]):
             return None
         return user
 
-    def is_active(self, user: User) -> bool:
-        return user.is_active
-
-    def is_superuser(self, user: User) -> bool:
-        return user.is_superuser
+    def is_active(self, user: dict) -> bool:
+        return user["is_active"]
 
 
-user = CRUDUser(User)
+user = CRUDUserProfile()
