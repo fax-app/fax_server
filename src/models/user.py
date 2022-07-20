@@ -2,8 +2,6 @@ from .base import BaseDBModel
 
 
 class UserProfile(BaseDBModel):
-    PK: str
-    SK: str
     full_name: str | None
     email: str
     hashed_password: str
@@ -12,6 +10,6 @@ class UserProfile(BaseDBModel):
     last_login: str
     profile_picture_url: str | None
 
-    def __init__(self, attrs: dict | None):
+    def __init__(self, attrs: dict = None):
         if attrs is not None:
             super().__init__(attrs)

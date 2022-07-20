@@ -27,13 +27,13 @@ def get_current_user(
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[security.ALGORITHM])
         token_data = schemas.TokenPayload(**payload)
-        primaryKey = json.loads(token_data.sub.replace("'", '"'))
+        primary_key = json.loads(token_data.sub.replace("'", '"'))
     except (jwt.JWTError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    user_profile = crud.user.get(db, primaryKey=primaryKey)
+    user_profile = crud.user.get(db, primary_key=primary_key)
     if not user_profile:
         raise HTTPException(status_code=404, detail="User not found")
     user = UserProfile(user_profile)

@@ -13,8 +13,11 @@ class Settings(BaseSettings):
     AWS_SECRET_ACCESS_KEY: str
     AWS_REGION: str
 
+    SERVER_HOST: str
+
     # email/smtp settings
     EMAILS_ENABLED: bool
+    EMAIL_RESET_TOKEN_EXPIRE_HOURS: int
     EMAIL_TEMPLATES_DIR: str
     EMAILS_FROM_NAME: str
     EMAILS_FROM_EMAIL: str

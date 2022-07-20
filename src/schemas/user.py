@@ -20,13 +20,12 @@ class UserCreate(UserBase):
     username: str
     password: str
     full_name: Optional[str] = None
-    profile_picture_url: Optional[str] = None
 
 
 # Properties to receive via API on update
 class UserUpdate(UserBase):
     email: Optional[EmailStr] = None
-    username: Optional[str] = None
+    display_name: Optional[str] = None
     password: Optional[str] = None
     full_name: Optional[str] = None
     profile_picture_url: Optional[str] = None
@@ -49,5 +48,3 @@ class User(UserInDBBase):
 # Additional properties stored in DB
 class UserInDB(UserInDBBase):
     hashed_password: str
-    GSI1PK: str = "USERNAME"
-    GSI1SK: str
