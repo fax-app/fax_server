@@ -6,8 +6,8 @@ class BaseDBModel:
         for i, j in attrs.items():
             setattr(self, i, j)
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return self.__dict__
 
-    def primary_key(self):
+    def primary_key(self) -> dict:
         return {"PK": self.PK, "SK": self.SK}

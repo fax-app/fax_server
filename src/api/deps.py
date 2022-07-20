@@ -27,7 +27,8 @@ def get_current_user(
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[security.ALGORITHM])
         token_data = schemas.TokenPayload(**payload)
-        primary_key = json.loads(token_data.sub.replace("'", '"'))
+        if token_data.sub is not None:
+            primary_key = json.loads(token_data.sub.replace("'", '"'))
     except (jwt.JWTError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

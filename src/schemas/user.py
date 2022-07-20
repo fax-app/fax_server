@@ -39,9 +39,9 @@ class UserInDBBase(UserBase):
 # Additional properties to return via API
 class User(UserInDBBase):
     full_name: Optional[str] = None
-    email: EmailStr = None
-    created_at: datetime = None
-    last_login: datetime = None
+    email: EmailStr
+    created_at: datetime
+    last_login: datetime
     profile_picture_url: Optional[str] = None
 
 

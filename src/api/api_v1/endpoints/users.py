@@ -18,7 +18,7 @@ def create_user(
     db: Any = Depends(deps.get_db),
     user_create: schemas.UserCreate,
     current_user: UserProfile = Depends(deps.get_current_active_user),
-) -> UserProfile:
+) -> Any:
     """
     Create new user. Must Be logged in first.
     """
