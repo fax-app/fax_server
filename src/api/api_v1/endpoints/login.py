@@ -48,6 +48,7 @@ def test_token(current_user: UserProfile = Depends(deps.get_current_user)) -> An
     """
     Test access token
     """
+    print(current_user.to_dict())
     return current_user.to_dict()
 
 

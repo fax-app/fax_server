@@ -20,6 +20,7 @@ class UserCreate(UserBase):
     username: str
     password: str
     full_name: Optional[str] = None
+    is_active: Optional[bool] = None
 
 
 # Properties to receive via API on update
@@ -39,9 +40,11 @@ class UserInDBBase(UserBase):
 # Additional properties to return via API
 class User(UserInDBBase):
     full_name: Optional[str] = None
+    display_name: Optional[str] = None
     email: EmailStr
     created_at: datetime
     last_login: datetime
+    is_active: Optional[bool] = None
     profile_picture_url: Optional[str] = None
 
 

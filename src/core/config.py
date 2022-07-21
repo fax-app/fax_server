@@ -1,4 +1,4 @@
-from pydantic import BaseSettings
+from pydantic import BaseSettings, EmailStr
 
 
 class Settings(BaseSettings):
@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str
 
     USERS_OPEN_REGISTRATION: bool
+
+    # Testing
+    TEST_USER: str
+    TEST_USER_PASSWORD: str
+    TEST_USER_EMAIL: EmailStr
 
     class Config:
         env_file = ".env"

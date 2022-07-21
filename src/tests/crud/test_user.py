@@ -1,94 +1,85 @@
-from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session
+from typing import Any
 
 from src import crud
 from src.core.security import verify_password
 from src.schemas.user import UserCreate, UserUpdate
-from src.tests.utils.utils import random_email, random_lower_string
+from src.tests.utils.utils import random_email, random_lower_string, random_username
+from src.tests.utils.user import create_random_user
 
 
-def test_create_user(db: Session) -> None:
+def test_create_user(db: Any) -> None:
+    # code from create_random_user copied for clarity
+    username = random_username()
     email = random_email()
     password = random_lower_string()
-    user_in = UserCreate(email=email, password=password)
-    user = crud.user.create(db, obj_in=user_in)
-    assert user.email == email
+    user_create = UserCreate(username=username, email=email, password=password)
+    user = crud.user.create(db, obj_in=user_create)
+    crud.user.remove(db, user.primary_key())
+    assert user.PK == f"USER#{username}"
     assert hasattr(user, "hashed_password")
 
 
-def test_authenticate_user(db: Session) -> None:
-    email = random_email()
+def test_authenticate_user(db: Any) -> None:
     password = random_lower_string()
-    user_in = UserCreate(email=email, password=password)
-    user = crud.user.create(db, obj_in=user_in)
-    authenticated_user = crud.user.authenticate(db, email=email, password=password)
-    assert authenticated_user
-    assert user.email == authenticated_user.email
+    user = create_random_user(db, password)
+    authenticated_user = crud.user.authenticate(
+        db, username=user.username(), password=password
+    )
+    crud.user.remove(db, user.primary_key())
+    if authenticated_user is not None:
+        assert user.username() == authenticated_user.username()
+    else:
+        assert False
 
 
-def test_not_authenticate_user(db: Session) -> None:
-    email = random_email()
+def test_not_authenticate_user(db: Any) -> None:
     password = random_lower_string()
-    user = crud.user.authenticate(db, email=email, password=password)
-    assert user is None
+    user = create_random_user(db, password)
+    password = "wrong password"
+    non_authenticated_user = crud.user.authenticate(
+        db, username=user.username(), password=password
+    )
+    crud.user.remove(db, user.primary_key())
+    assert non_authenticated_user is None
 
 
-def test_check_if_user_is_active(db: Session) -> None:
-    email = random_email()
-    password = random_lower_string()
-    user_in = UserCreate(email=email, password=password)
-    user = crud.user.create(db, obj_in=user_in)
+def test_check_if_user_is_active(db: Any) -> None:
+    user = create_random_user(db)
     is_active = crud.user.is_active(user)
+    crud.user.remove(db, user.primary_key())
     assert is_active is True
 
 
-def test_check_if_user_is_active_inactive(db: Session) -> None:
-    email = random_email()
-    password = random_lower_string()
-    user_in = UserCreate(email=email, password=password, disabled=True)
-    user = crud.user.create(db, obj_in=user_in)
+def test_check_if_user_is_active_inactive(db: Any) -> None:
+    user = create_random_user(db, is_active=False)
     is_active = crud.user.is_active(user)
-    assert is_active
+    crud.user.remove(db, user.primary_key())
+    assert is_active is False
 
 
-def test_check_if_user_is_superuser(db: Session) -> None:
-    email = random_email()
-    password = random_lower_string()
-    user_in = UserCreate(email=email, password=password, is_superuser=True)
-    user = crud.user.create(db, obj_in=user_in)
-    is_superuser = crud.user.is_superuser(user)
-    assert is_superuser is True
+def test_get_user(db: Any) -> None:
+    user = create_random_user(db)
+    user_from_db = crud.user.get(db, primary_key=user.primary_key())
+    crud.user.remove(db, user.primary_key())
+    assert user_from_db
+    assert user.email == user_from_db["email"]
 
 
-def test_check_if_user_is_superuser_normal_user(db: Session) -> None:
-    username = random_email()
-    password = random_lower_string()
-    user_in = UserCreate(email=username, password=password)
-    user = crud.user.create(db, obj_in=user_in)
-    is_superuser = crud.user.is_superuser(user)
-    assert is_superuser is False
+def test_get_user_by_username(db: Any) -> None:
+    user = create_random_user(db)
+    user_from_db = crud.user.get_by_username(db, username=user.username())
+    crud.user.remove(db, user.primary_key())
+    assert user_from_db
+    assert user.email == user_from_db.email
 
 
-def test_get_user(db: Session) -> None:
-    password = random_lower_string()
-    username = random_email()
-    user_in = UserCreate(email=username, password=password, is_superuser=True)
-    user = crud.user.create(db, obj_in=user_in)
-    user_2 = crud.user.get(db, id=user.id)
-    assert user_2
-    assert user.email == user_2.email
-    assert jsonable_encoder(user) == jsonable_encoder(user_2)
-
-
-def test_update_user(db: Session) -> None:
-    password = random_lower_string()
-    email = random_email()
-    user_in = UserCreate(email=email, password=password, is_superuser=True)
-    user = crud.user.create(db, obj_in=user_in)
+def test_update_user(db: Any) -> None:
+    user = create_random_user(db)
     new_password = random_lower_string()
-    user_in_update = UserUpdate(password=new_password, is_superuser=True)
-    crud.user.update(db, db_obj=user, obj_in=user_in_update)
-    user_2 = crud.user.get(db, id=user.id)
-    assert user_2
-    assert user.email == user_2.email
-    assert verify_password(new_password, user_2.hashed_password)
+    user_create_update = UserUpdate(password=new_password)
+    crud.user.update(db, db_obj=user, obj_in=user_create_update)
+    user_from_db = crud.user.get(db, primary_key=user.primary_key())
+    crud.user.remove(db, user.primary_key())
+    assert user_from_db
+    assert user.email == user_from_db["email"]
+    assert verify_password(new_password, user_from_db["hashed_password"])

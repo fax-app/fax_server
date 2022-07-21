@@ -4,7 +4,8 @@
 	"version": "0.0.0",
 	"scripts": {
 		"prep": "./scripts/post-checkout.sh",
-		"server": "./scripts/start_dev_server.sh"
+		"server": "./scripts/start_dev_server.sh",
+		"precommit": "./.husky/pre-commit"
 	},
 	"devDependencies": {
 		"husky": "^8.0.0"

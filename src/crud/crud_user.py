@@ -22,7 +22,11 @@ class CRUDUserProfile(CRUDBase[UserCreate, UserUpdate]):
         profile.hashed_password = f"{get_password_hash(obj_in.password)}"
         profile.email = f"{obj_in.email}"
         profile.created_at = datetime.now().isoformat()
-        profile.is_active = True
+        profile.last_login = datetime.now().isoformat()
+        if obj_in.is_active is False:
+            profile.is_active = False
+        else:
+            profile.is_active = True
         if obj_in.full_name is not None:
             profile.full_name = f"{obj_in.full_name}"
 

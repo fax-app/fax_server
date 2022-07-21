@@ -19,5 +19,6 @@ def test_email(
     """
     Test emails.
     """
+    # TODO disallow users from accessing endpoint, only for testing
     send_test_email(email_to=email_to)
     return {"msg": "Test email sent"}

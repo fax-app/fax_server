@@ -5,9 +5,9 @@
 
 poetry run black .
 poetry run flake8 .
-# poetry run mypy .
+poetry run mypy .
 poetry run autoflake --remove-all-unused-imports --recursive --remove-unused-variables --in-place . --exclude=__init__.py
 poetry run isort **/*.py
-# poetry run pytest --cov-report=html
+poetry run pytest --cov=src --cov-report=html src/tests
 
 git add -- .
