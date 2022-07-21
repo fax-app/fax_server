@@ -1,19 +1,26 @@
-from typing import Dict, Generator
+from typing import Dict, Generator, Any
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
 
-from src.core.config import settings
-from src.db.session import SessionLocal
+from src.db import table
 from src.main import app
-from src.tests.utils.user import authentication_token_from_email
-from src.tests.utils.utils import get_superuser_token_headers
+from src.models import UserProfile
+from src.tests.utils.user import (
+    authentication_token_from_username,
+    get_test_user_token_headers,
+    create_test_user,
+)
 
 
 @pytest.fixture(scope="session")
-def db() -> Generator:
-    yield SessionLocal()
+def db() -> Any:
+    return table
+
+
+@pytest.fixture(autouse=True, scope="session")
+def test_user(db: Any) -> UserProfile:
+    return create_test_user(db)
 
 
 @pytest.fixture(scope="module")
@@ -23,12 +30,10 @@ def client() -> Generator:
 
 
 @pytest.fixture(scope="module")
-def superuser_token_headers(client: TestClient) -> Dict[str, str]:
-    return get_superuser_token_headers(client)
+def test_user_token_headers(client: TestClient) -> Dict[str, str]:
+    return get_test_user_token_headers(client)
 
 
 @pytest.fixture(scope="module")
-def normal_user_token_headers(client: TestClient, db: Session) -> Dict[str, str]:
-    return authentication_token_from_email(
-        client=client, email=settings.EMAIL_TEST_USER, db=db
-    )
+def user_token_headers(client: TestClient, db: Any, username: str) -> Dict[str, str]:
+    return authentication_token_from_username(client=client, username=username, db=db)

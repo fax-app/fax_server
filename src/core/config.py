@@ -1,4 +1,4 @@
-from pydantic import BaseSettings
+from pydantic import BaseSettings, EmailStr
 
 
 class Settings(BaseSettings):
@@ -8,16 +8,30 @@ class Settings(BaseSettings):
 
     ACCESS_TOKEN_EXPIRE_MINUTES: int
 
-    # postgres values
-    POSTGRES_SERVER: str
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
-    SQLALCHEMY_DATABASE_URI: str
+    # AWS values
+    AWS_ACCESS_KEY_ID: str
+    AWS_SECRET_ACCESS_KEY: str
+    AWS_REGION: str
 
-    FIRST_SUPERUSER: str
-    FIRST_SUPERUSER_PASSWORD: str
+    SERVER_HOST: str
+
+    # email/smtp settings
+    EMAILS_ENABLED: bool
+    EMAIL_RESET_TOKEN_EXPIRE_HOURS: int
+    EMAIL_TEMPLATES_DIR: str
+    EMAILS_FROM_NAME: str
+    EMAILS_FROM_EMAIL: str
+    SMTP_HOST: str
+    SMTP_PORT: int
+    SMTP_USER: str
+    SMTP_PASSWORD: str
+
     USERS_OPEN_REGISTRATION: bool
+
+    # Testing
+    TEST_USER: str
+    TEST_USER_PASSWORD: str
+    TEST_USER_EMAIL: EmailStr
 
     class Config:
         env_file = ".env"

@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 import emails
-from app.core.config import settings
 from emails.template import JinjaTemplate
 from jose import jwt
 
@@ -24,8 +23,6 @@ def send_email(
         mail_from=(settings.EMAILS_FROM_NAME, settings.EMAILS_FROM_EMAIL),
     )
     smtp_options = {"host": settings.SMTP_HOST, "port": settings.SMTP_PORT}
-    if settings.SMTP_TLS:
-        smtp_options["tls"] = True
     if settings.SMTP_USER:
         smtp_options["user"] = settings.SMTP_USER
     if settings.SMTP_PASSWORD:
@@ -47,9 +44,9 @@ def send_test_email(email_to: str) -> None:
     )
 
 
-def send_reset_password_email(email_to: str, email: str, token: str) -> None:
+def send_reset_password_email(email_to: str, username: str, token: str) -> None:
     project_name = settings.PROJECT_NAME
-    subject = f"{project_name} - Password recovery for user {email}"
+    subject = f"{project_name} - Password recovery for user {username}"
     with open(Path(settings.EMAIL_TEMPLATES_DIR) / "reset_password.html") as f:
         template_str = f.read()
     server_host = settings.SERVER_HOST
@@ -60,7 +57,7 @@ def send_reset_password_email(email_to: str, email: str, token: str) -> None:
         html_template=template_str,
         environment={
             "project_name": settings.PROJECT_NAME,
-            "username": email,
+            "username": username,
             "email": email_to,
             "valid_hours": settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS,
             "link": link,
@@ -88,13 +85,13 @@ def send_new_account_email(email_to: str, username: str, password: str) -> None:
     )
 
 
-def generate_password_reset_token(email: str) -> str:
+def generate_password_reset_token(username: str) -> str:
     delta = timedelta(hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
     now = datetime.utcnow()
     expires = now + delta
     exp = expires.timestamp()
     encoded_jwt = jwt.encode(
-        {"exp": exp, "nbf": now, "sub": email},
+        {"exp": exp, "nbf": now, "sub": username},
         settings.SECRET_KEY,
         algorithm="HS256",
     )
@@ -104,6 +101,6 @@ def generate_password_reset_token(email: str) -> str:
 def verify_password_reset_token(token: str) -> Optional[str]:
     try:
         decoded_token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-        return decoded_token["email"]
+        return decoded_token["sub"]
     except jwt.JWTError:
         return None

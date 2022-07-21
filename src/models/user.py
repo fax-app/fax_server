@@ -1,19 +1,19 @@
-from typing import TYPE_CHECKING
-
-from sqlalchemy import Boolean, Column, Integer, String
-from sqlalchemy.orm import relationship
-
-from src.db.base_class import Base
-
-if TYPE_CHECKING:
-    from .item import Item  # noqa: F401
+from .base import BaseDBModel
 
 
-class User(Base):
-    id = Column(Integer, primary_key=True, index=True)
-    full_name = Column(String, index=True)
-    email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
-    is_active = Column(Boolean(), default=True)
-    is_superuser = Column(Boolean(), default=False)
-    items = relationship("Item", back_populates="owner")
+class UserProfile(BaseDBModel):
+    display_name: str | None
+    full_name: str | None
+    email: str
+    hashed_password: str
+    is_active: bool
+    created_at: str
+    last_login: str
+    profile_picture_url: str | None
+
+    def __init__(self, attrs: dict = None):
+        if attrs is not None:
+            super().__init__(attrs)
+
+    def username(self) -> str:
+        return self.PK[5:]
